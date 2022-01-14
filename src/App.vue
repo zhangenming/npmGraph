@@ -1,81 +1,47 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { pick } from './tool'
+;(async () => {
+  async function fetchData(name) {
+    const d = await (
+      await fetch(`https://registry.npmjs.cf/${name}/latest`)
+    ).json()
+
+    const result = d.dependencies || {}
+    result.__proto__ = null
+    return result
+    return pick(d, 'dependencies', 'devDependencies')
+  }
+
+  function walk(deps, o) {
+    Object.keys(deps).map(async dep => {
+      const res = await fetchData(dep)
+      o[dep] = res
+      walk(res, o[dep])
+    })
+  }
+
+  const RESULT = { __proto__: null }
+  const vite = await fetchData('vite')
+
+  console.log(RESULT)
+
+  walk(vite, RESULT)
+
+  setTimeout(() => {
+    console.log(RESULT)
+  }, 5000)
+
+  // const p = new Promise(rs => setTimeout(() => rs('setTimeout'), 1000))
+  // console.log(1)
+  // p.llthen.ll //
+  // console.log(2)
+
+  //
+})()
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <main>1 1</main>
 </template>
 
-<style>
-@import './assets/base.css';
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-
-  font-weight: normal;
-}
-
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-}
-</style>
+<style></style>

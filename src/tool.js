@@ -5,4 +5,8 @@ export function pick(o, ...keys) {
   }, {})
 }
 
+export function sleep(t) {
+  return new Promise(rs => setTimeout(rs, t))
+}
+
 export const x = 1
